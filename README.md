@@ -37,7 +37,8 @@ preceded by the `%` sign and must be closed by a `%end<statement>` tag; e.g.:
     %endif
 
 All text between `<%` and `%>` is considered Python code; you can use the
-`echo()` function to output some text from within Python code blocks; e.g.:
+builtin `echo()` function to output some text from within Python code blocks;
+e.g.:
 
     <%
     import time
