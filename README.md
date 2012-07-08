@@ -9,7 +9,7 @@ Python code.
 
 Installation
 ------------
-Download the source code from [GitHub](https://github.com/dotpy/step)
+Download the package from [GitHub](https://github.com/dotpy/step/downloads)
 and run the install script:
 
     # python setup.py install
