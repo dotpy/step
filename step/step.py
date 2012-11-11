@@ -34,7 +34,7 @@ class Template(object):
         template = c.sub(r"<%:\g<1>%>", o.sub(r"<%\g<1>%>", template))
 
         # Replace (${x}) variables with '<%echo(x)%>'
-        v = re.compile("\${([a-zA-Z0-9[\].\"\']+)}")
+        v = re.compile("\${([a-zA-Z0-9[\].\"\'_]+)}")
         template = v.sub(r"<%echo(\g<1>)%>\n", template)
 
         return template
