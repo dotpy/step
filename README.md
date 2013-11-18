@@ -9,8 +9,8 @@ Python code.
 
 Installation
 ------------
-Download the package from [GitHub](https://github.com/dotpy/step/downloads)
-and run the install script:
+Download the package from [GitHub](https://github.com/dotpy/step/) and run the
+install script:
 
     # python setup.py install
 
@@ -20,12 +20,12 @@ Basic usage
 A template is a string containing any kind of textual content and a set of
 directives representing variables, control structures and blocks of Python code.
 
-Variables are enclosed in `${}` and follow the same syntax rules as Python
+Variables are enclosed in `{{}}` and follow the same syntax rules as Python
 variables; e.g.:
 
-    This is variable x: ${x}
-    This is the third item of my_list: ${my_list[2]}
-    This is not a variable: $\{x\}
+    This is variable x: {{x}}
+    This is the third item of my_list: {{my_list[2]}}
+    This is not a variable: \{\{x\}\}
 
 Flow control expressions are written like regular Python control structures,
 preceded by the `%` sign and must be closed by a `%end<statement>` tag; e.g.:
@@ -33,7 +33,7 @@ preceded by the `%` sign and must be closed by a `%end<statement>` tag; e.g.:
     %if (x > 2):
         x is greater than 2
     %else:
-        x is ${x}
+        x is {{x}}
     %endif
 
 All text between `<%` and `%>` is considered Python code; you can use the
@@ -50,7 +50,7 @@ You can use the special function `isdef()` to perform some actions only if a
 name is defined in the template namespace; e.g.:
 
     %if isdef("my_var")
-        my_var is ${my_var}
+        my_var is {{my_var}}
     %endif
 
 The `setopt()` function allows you to enable options that modify the template
@@ -58,6 +58,11 @@ output; the only supported option is 'strip', which removes leading/trailing
 whitespace, contiguous whitespace and empty lines and defaults to true; e.g.:
 
     <%setopt("strip", True)%>
+
+The 'strip' option can also be given as a parameter during `Template` object
+creation; e.g.:
+
+    tmpl = step.Template(TEMPLATE_STRING, strip=True)
 
 A backslash at the end of a line will suppress the newline character.
 
@@ -75,6 +80,7 @@ To run the test suite, just run `python setup.py test`.
 
 Credits
 -------
-Copyright (c) 2012 Daniele Mazzocchio (danix@kernel-panic.it).
+Copyright (c) 2012-2013 Daniele Mazzocchio (danix@kernel-panic.it).
+Several improvements by Erki Suurjaak.
 
 Licensed under BSD license (see LICENSE.md file).
