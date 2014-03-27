@@ -7,7 +7,7 @@ class Template(object):
 
     COMPILED_TEMPLATES = {} # {template string: code object, }
     # Regex for stripping all leading, trailing and interleaving whitespace.
-    RE_STRIP = re.compile("(^[ \t]+|[ \t]+$|(?<=[ \t])[ \t]+|^\r?\n)", re.M)
+    RE_STRIP = re.compile("(^[ \t]+|[ \t]+$|(?<=[ \t])[ \t]+|\A[\r\n]+|[ \t\r\n]+\Z)", re.M)
 
     def __init__(self, template, strip=True):
         """Initialize class"""
