@@ -27,8 +27,8 @@ class TestTemplate(unittest.TestCase):
                   {{eggs}} eggs
                %endif"""
         values = {"eggs": 3}
-        output = "I have 3 eggs\n"
-        self.assertEqual(step.Template(tmpl, strip=True).expand(values), output)
+        output = "I have 3 eggs"
+        self.assertEqual(step.Template(tmpl).expand(values), output)
 
     def test_isdef(self):
         tmpl = r"""
@@ -37,7 +37,7 @@ class TestTemplate(unittest.TestCase):
                %else:
                    I don't like spam
                %endif"""
-        output = "I don't like spam\n"
+        output = "I don't like spam"
         self.assertEqual(step.Template(tmpl).expand({}), output)
 
     def test_echo(self):
@@ -47,4 +47,11 @@ class TestTemplate(unittest.TestCase):
                %>"""
         values = {"eggs": 1}
         output = "I have 1 egg"
+        self.assertEqual(step.Template(tmpl).expand(values), output)
+
+
+    def test_strip(self):
+        tmpl = "\n\nName:\t\t\t{{var}}\n \t\n"
+        values = {"var": 1}
+        output = "Name:\t1"
         self.assertEqual(step.Template(tmpl).expand(values), output)
