@@ -9,7 +9,11 @@ Python code.
 
 Installation
 ------------
-Download the package from [GitHub](https://github.com/dotpy/step/) and run the
+Use pip:
+
+    # pip install step-template
+
+or download the package from [GitHub](https://github.com/dotpy/step/) and run the
 install script:
 
     # python setup.py install
