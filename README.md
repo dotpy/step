@@ -84,7 +84,7 @@ To run the test suite, just run `python setup.py test`.
 
 Credits
 -------
-Copyright (c) 2012-2013 Daniele Mazzocchio (danix@kernel-panic.it).
+Copyright (c) 2012 Daniele Mazzocchio (danix@kernel-panic.it).
 Several improvements by Erki Suurjaak.
 
-Licensed under BSD license (see LICENSE.md file).
+Licensed under the BSD license (see [LICENSE.md](LICENSE.md) file).
