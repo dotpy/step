@@ -28,18 +28,25 @@ if sys.version < "2.2.3":
     DistributionMetadata.classifiers = None
     DistributionMetadata.download_url = None
 
-setup(name         = "step",
+setup(name         = "step-template",
       version      = __version__,
       author       = "Daniele Mazzocchio",
       author_email = "danix@kernel-panic.it",
-      packages     = ["step"],
+      packages     = ["step", "step.tests"],
       cmdclass     = {"test": TestCommand},
       description  = "Simple Template Engine for Python",
-      classifiers  = ["Development status :: 2 - Pre-Alpha",
+      classifiers  = ["Development Status :: 5 - Production/Stable",
                       "Environment :: Console",
                       "Intended Audience :: Developers",
-                      "License :: Other/Proprietary License",
+                      "License :: OSI Approved :: BSD License",
                       "Natural Language :: English",
                       "Operating System :: OS Independent",
                       "Programming Language :: Python",
-                      "Topic :: Text Processing"])
+                      "Topic :: Text Processing"],
+      url="https://github.com/dotpy/step",
+      license="BSD",
+      keywords="templates templating template-engines",
+      long_description="step is a pure-Python module providing a very "
+      "simple template engine with minimum syntax. It supports variable "
+      "expansion, flow control and embedding of Python code.",
+)

@@ -9,7 +9,11 @@ Python code.
 
 Installation
 ------------
-Download the package from [GitHub](https://github.com/dotpy/step/) and run the
+Use pip:
+
+    # pip install step-template
+
+or download the package from [GitHub](https://github.com/dotpy/step/) and run the
 install script:
 
     # python setup.py install
@@ -80,7 +84,7 @@ To run the test suite, just run `python setup.py test`.
 
 Credits
 -------
-Copyright (c) 2012-2013 Daniele Mazzocchio (danix@kernel-panic.it).
+Copyright (c) 2012 Daniele Mazzocchio (danix@kernel-panic.it).
 Several improvements by Erki Suurjaak.
 
-Licensed under BSD license (see LICENSE.md file).
+Licensed under the BSD license (see [LICENSE.md](LICENSE.md) file).
