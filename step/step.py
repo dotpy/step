@@ -1,6 +1,7 @@
 """A light and fast template engine."""
 
 import re
+import sys
 
 
 class Template(object):
@@ -120,6 +121,8 @@ def escape_html(x):
 
 def to_unicode(x, encoding="utf-8"):
     """Convert anything to Unicode."""
+    if sys.version_info > (3, 0):
+        return str(x)
     if not isinstance(x, unicode):
         x = unicode(str(x), encoding, errors="replace")
     return x
