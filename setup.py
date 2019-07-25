@@ -18,8 +18,8 @@ from step.tests import TestCommand
 
 
 __author__ = "Daniele Mazzocchio <danix@kernel-panic.it>"
-__version__ = "0.0.2"
-__date__    = "Nov 18, 2013"
+__version__ = "0.0.3"
+__date__    = "Jul 25, 2019"
 
 
 # Python versions prior 2.2.3 don't support 'classifiers' and 'download_url'
