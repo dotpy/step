@@ -20,14 +20,14 @@ class TestTemplate(unittest.TestCase):
         self.assertEqual(step.Template(tmpl).expand({}), output)
 
     def test_condition(self):
-        tmpl = r"""I have \
+        tmpl = r"""I have
                %if eggs == 1:
                   1 egg
                %else:
                   {{eggs}} eggs
                %endif"""
         values = {"eggs": 3}
-        output = "I have 3 eggs"
+        output = "I have\n3 eggs"
         self.assertEqual(step.Template(tmpl).expand(values), output)
 
     def test_isdef(self):
@@ -55,3 +55,25 @@ class TestTemplate(unittest.TestCase):
         values = {"var": 1}
         output = "Name:\t1"
         self.assertEqual(step.Template(tmpl).expand(values), output)
+
+
+    def test_double_quote_escape(self):
+        tmpl = r'abc""defg"""hijk""""lmn"""""'
+        self.assertEqual(step.Template(tmpl).expand(), tmpl)
+
+
+    def test_backslash_escape(self):
+        tmpl_list = [
+            r'===\n===',
+            r'===\f===',
+            r'===\\===',
+            '===\n===',
+            '===\f===',
+            '===\\===',
+            '===\\n===',
+            '===\\\n===',
+            '===\\\\n===',
+        ]
+        for tmpl in tmpl_list:
+            self.assertEqual(step.Template(tmpl).expand(), tmpl)
+

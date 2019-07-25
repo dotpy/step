@@ -1,3 +1,3 @@
 """A light and fast template engine."""
 
-from step import Template
+from .step import Template
