@@ -31,6 +31,10 @@ variables; e.g.:
     This is the third item of my_list: {{my_list[2]}}
     This is not a variable: \{\{x\}\}
 
+If `Template` is created with `escape=True`, all variables are auto-escaped
+for HTML, unless given with a leading exclamation mark; e.g. `raw x: {{!x}}`.
+The escape-function can be changed via `Template().builtins`.
+
 Flow control expressions are written like regular Python control structures,
 preceded by the `%` sign and must be closed by a `%end<statement>` tag; e.g.:
 

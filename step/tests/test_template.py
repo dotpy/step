@@ -57,6 +57,15 @@ class TestTemplate(unittest.TestCase):
         self.assertEqual(step.Template(tmpl).expand(values), output)
 
 
+    def test_autoescape(self):
+        HTML = """<a href=""> &' </a>"""
+        ESCAPED = """&lt;a href=&quot;&quot;&gt; &amp;&#39; &lt;/a&gt;"""
+        tmpl = """{{!%r}} {{%r}}""" % (HTML, HTML)
+        for escape in (True, False):
+            output = "%s %s" % (HTML, ESCAPED if escape else HTML)
+            self.assertEqual(step.Template(tmpl, escape=escape).expand({}), output)
+
+
     def test_double_quote_escape(self):
         tmpl = r'abc""defg"""hijk""""lmn"""""'
         self.assertEqual(step.Template(tmpl).expand(), tmpl)
