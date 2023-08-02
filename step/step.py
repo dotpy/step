@@ -1,12 +1,10 @@
 """A light and fast template engine."""
 
 import re
-import sys
 
 
-PY3 = False
-if sys.version_info > (3, 0):
-    PY3 = True
+try: text_type, string_types = unicode, (bytes, unicode)  # Py2
+except Exception: text_type, string_types = str, (str, )  # Py3
 
 
 class Template(object):
@@ -121,15 +119,15 @@ class Template(object):
 def escape_html(x):
     """Escape HTML special characters &<> and quotes "'."""
     CHARS, ENTITIES = "&<>\"'", ["&amp;", "&lt;", "&gt;", "&quot;", "&#39;"]
-    string = x if isinstance(x, basestring) else str(x)
+    string = x if isinstance(x, string_types) else str(x)
     for c, e in zip(CHARS, ENTITIES): string = string.replace(c, e)
     return string
 
 
 def to_unicode(x, encoding="utf-8"):
     """Convert anything to Unicode."""
-    if PY3:
-        return str(x)
-    if not isinstance(x, unicode):
-        x = unicode(str(x), encoding, errors="replace")
+    if isinstance(x, bytes):
+        x = text_type(x, encoding, errors="replace")
+    elif not isinstance(x, string_types):
+        x = text_type(str(x))
     return x
