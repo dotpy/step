@@ -81,6 +81,7 @@ class Template(object):
             blk = re.sub(r"\\(%|{|})", r"\g<1>", blk)
 
             if not (n % 2):
+                if not blk: continue
                 # Escape backslash characters
                 blk = re.sub(r'\\', r'\\\\', blk)
                 # Escape double-quote characters
