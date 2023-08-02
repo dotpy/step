@@ -126,7 +126,7 @@ def escape_html(x):
 
 def to_unicode(x, encoding="utf-8"):
     """Convert anything to Unicode."""
-    if isinstance(x, bytes):
+    if isinstance(x, (bytes, bytearray)):
         x = text_type(x, encoding, errors="replace")
     elif not isinstance(x, string_types):
         x = text_type(str(x))
