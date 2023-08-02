@@ -31,7 +31,7 @@ class Template(object):
     def expand(self, namespace={}, **kw):
         """Return the expanded template string"""
         output = []
-        namespace.update(kw, **self.builtins)
+        namespace = dict(namespace or {}, **dict(kw, **self.builtins))
         namespace["echo"]  = lambda s: output.append(s)
         namespace["isdef"] = lambda v: v in namespace
 
@@ -48,7 +48,7 @@ class Template(object):
                 buffer.write(postprocess(cache[0]))
                 cache[0] = ""
 
-        namespace.update(kw, **self.builtins)
+        namespace = dict(namespace or {}, **dict(kw, **self.builtins))
         namespace["echo"]  = write_buffer
         namespace["isdef"] = lambda v: v in namespace
         postprocess = lambda s: s.encode(encoding)
