@@ -9,7 +9,8 @@ except Exception: text_type, string_types = str, (str, )  # Py3
 
 class Template(object):
 
-    COMPILED_TEMPLATES = {} # {template string: code object, }
+    TRANSPILED_TEMPLATES = {} # {(template string, compile options): compilable code string}
+    COMPILED_TEMPLATES   = {} # {compilable code string: code object}
     # Regex for stripping all leading, trailing and interleaving whitespace.
     RE_STRIP = re.compile("(^[ \t]+|[ \t]+$|(?<=[ \t])[ \t]+|\\A[\r\n]+|[ \t\r\n]+\\Z)", re.M)
 
@@ -20,12 +21,10 @@ class Template(object):
         self.options  = {"strip": strip, "escape": escape}
         self.builtins = {"escape": lambda s: escape_html(s),
                          "setopt": lambda k, v: self.options.update({k: v}), }
-        cache_key = (template, bool(escape))
-        if cache_key in Template.COMPILED_TEMPLATES:
-            self.code = Template.COMPILED_TEMPLATES[cache_key]
-        else:
-            self.code = self._process(self._preprocess(self.template))
-            Template.COMPILED_TEMPLATES[cache_key] = self.code
+        key = (template, bool(escape))
+        TPLS, CODES = Template.TRANSPILED_TEMPLATES, Template.COMPILED_TEMPLATES
+        src = TPLS.setdefault(key, TPLS.get(key) or self._process(self._preprocess(self.template)))
+        self.code = CODES.setdefault(src, CODES.get(src) or compile(src, "<string>", "exec"))
 
     def expand(self, namespace={}, **kw):
         """Return the expanded template string"""
@@ -34,7 +33,7 @@ class Template(object):
         namespace["echo"]  = lambda s: output.append(s)
         namespace["isdef"] = lambda v: v in namespace
 
-        eval(compile(self.code, "<string>", "exec"), namespace)
+        eval(self.code, namespace)
         return self._postprocess("".join(map(to_unicode, output)))
 
     def stream(self, buffer, namespace={}, encoding="utf-8", **kw):
@@ -54,7 +53,7 @@ class Template(object):
         if self.options["strip"]:
             postprocess = lambda s: Template.RE_STRIP.sub("", s).encode(encoding)
 
-        eval(compile(self.code, "<string>", "exec"), namespace)
+        eval(self.code, namespace)
         write_buffer("", flush=True) # Flush any last cached bytes
 
     def _preprocess(self, template):
