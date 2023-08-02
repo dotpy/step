@@ -11,7 +11,7 @@ class Template(object):
 
     COMPILED_TEMPLATES = {} # {template string: code object, }
     # Regex for stripping all leading, trailing and interleaving whitespace.
-    RE_STRIP = re.compile("(^[ \t]+|[ \t]+$|(?<=[ \t])[ \t]+|\A[\r\n]+|[ \t\r\n]+\Z)", re.M)
+    RE_STRIP = re.compile("(^[ \t]+|[ \t]+$|(?<=[ \t])[ \t]+|\\A[\r\n]+|[ \t\r\n]+\\Z)", re.M)
 
     def __init__(self, template, strip=True):
         """Initialize class"""
@@ -60,11 +60,11 @@ class Template(object):
         """Modify template string before code conversion"""
         # Replace inline ('%') blocks for easier parsing
         o = re.compile("(?m)^[ \t]*%((if|for|while|try).+:)")
-        c = re.compile("(?m)^[ \t]*%(((else|elif|except|finally).*:)|(end\w+))")
+        c = re.compile("(?m)^[ \t]*%(((else|elif|except|finally).*:)|(end\\w+))")
         template = c.sub(r"<%:\g<1>%>", o.sub(r"<%\g<1>%>", template))
 
         # Replace ({{x}}) variables with '<%echo(x)%>'
-        v = re.compile("\{\{(.*?)\}\}")
+        v = re.compile(r"\{\{(.*?)\}\}")
         template = v.sub(r"<%echo(\g<1>)%>\n", template)
 
         return template
@@ -78,7 +78,7 @@ class Template(object):
             # Replace '<\%' and '%\>' escapes
             blk = re.sub(r"<\\%", "<%", re.sub(r"%\\>", "%>", blk))
             # Unescape '%{}' characters
-            blk = re.sub(r"\\(%|{|})", "\g<1>", blk)
+            blk = re.sub(r"\\(%|{|})", r"\g<1>", blk)
 
             if not (n % 2):
                 # Escape backslash characters
