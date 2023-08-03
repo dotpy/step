@@ -39,12 +39,8 @@ class Template(object):
             # Cache output as a single string and write to buffer.
             cache[0] += to_unicode(s)
             if flush and cache[0] or len(cache[0]) > 65536:
-                buffer.write(postprocess(cache[0]))
+                buffer.write(self._postprocess(cache[0]).encode(encoding))
                 cache[0] = ""
-
-        postprocess = lambda s: s.encode(encoding)
-        if self.options["strip"]:
-            postprocess = lambda s: Template.RE_STRIP.sub("", s).encode(encoding)
 
         eval(self.code, self._make_namespace(namespace, write_buffer, **kw))
         write_buffer("", flush=True) # Flush any last cached bytes
