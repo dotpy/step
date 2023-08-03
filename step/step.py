@@ -32,13 +32,13 @@ class Template(object):
         eval(self.code, self._make_namespace(namespace, output.append, **kw))
         return self._postprocess("".join(map(to_unicode, output)))
 
-    def stream(self, buffer, namespace={}, encoding="utf-8", **kw):
+    def stream(self, buffer, namespace={}, encoding="utf-8", buffer_size=65536, **kw):
         """Expand the template and stream it to a file-like buffer."""
 
-        def write_buffer(s, flush=False, cache = [""]):
+        def write_buffer(s, flush=False, cache=[""]):
             # Cache output as a single string and write to buffer.
             cache[0] += to_unicode(s)
-            if flush and cache[0] or len(cache[0]) > 65536:
+            if cache[0] and (flush or buffer_size < 1 or len(cache[0]) > buffer_size):
                 buffer.write(self._postprocess(cache[0]).encode(encoding))
                 cache[0] = ""
 
