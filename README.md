@@ -79,6 +79,11 @@ creation; e.g.:
 
 A backslash at the end of a line will suppress the newline character.
 
+Additional postprocessing can be applied on generated content, via
+`Template(.., postprocess=some callable or an iterable of callables)`; e.g.:
+
+    step.Template("\xff", postprocess=str.encode).expand() == b"\xc3\xbf"
+
 
 Documentation
 -------------

@@ -14,11 +14,12 @@ class Template(object):
     # Regex for stripping all leading, trailing and interleaving whitespace.
     RE_STRIP = re.compile("(^[ \t]+|[ \t]+$|(?<=[ \t])[ \t]+|\\A[\r\n]+|[ \t\r\n]+\\Z)", re.M)
 
-    def __init__(self, template, strip=True, escape=False):
+    def __init__(self, template, strip=True, escape=False, postprocess=None):
         """Initialize class"""
         super(Template, self).__init__()
+        pp = list([postprocess] if callable(postprocess) else postprocess or [])
         self.template = template
-        self.options  = {"strip": strip, "escape": escape}
+        self.options  = {"strip": strip, "escape": escape, "postprocess": pp}
         self.builtins = {"escape": lambda s: escape_html(s),
                          "setopt": lambda k, v: self.options.update({k: v}), }
         key = (template, bool(escape))
@@ -114,6 +115,8 @@ class Template(object):
         """Modify output string after variables and code evaluation"""
         if self.options["strip"]:
             output = Template.RE_STRIP.sub("", output)
+        for process in self.options["postprocess"]:
+            output = process(output)
         return output
 
 

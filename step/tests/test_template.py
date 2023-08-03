@@ -1,5 +1,6 @@
 """Test suite for the step.Template class"""
 
+import base64
 import unittest
 
 import step
@@ -15,7 +16,7 @@ class TestTemplate(unittest.TestCase):
         self.assertEqual(step.Template(tmpl).expand(values), output)
 
     def test_escape(self):
-        tmpl = "Variable: {\{var}\}"
+        tmpl = r"Variable: {\{var}\}"
         output = "Variable: {{var}}"
         self.assertEqual(step.Template(tmpl).expand({}), output)
 
@@ -60,6 +61,15 @@ class TestTemplate(unittest.TestCase):
         values = {"var": 1}
         output = "Name:\t1"
         self.assertEqual(step.Template(tmpl).expand(values), output)
+
+
+    def test_postprocess(self):
+        tmpl = "something"
+        output = tmpl.encode()
+        self.assertEqual(step.Template(tmpl, postprocess=str.encode).expand({}), output)
+        output = base64.b64encode(tmpl.encode())
+        postprocess = (str.encode, base64.b64encode)
+        self.assertEqual(step.Template(tmpl, postprocess=postprocess).expand({}), output)
 
 
     def test_autoescape(self):
