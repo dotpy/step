@@ -29,12 +29,7 @@ class Template(object):
     def expand(self, namespace={}, **kw):
         """Return the expanded template string"""
         output = []
-        namespace = dict(namespace or {}, **dict(kw, **self.builtins))
-        namespace["echo"]  = lambda s: output.append(s)
-        namespace["get"]   = lambda v, default=None: namespace.get(v, default)
-        namespace["isdef"] = lambda v: v in namespace
-
-        eval(self.code, namespace)
+        eval(self.code, self._make_namespace(namespace, output.append, **kw))
         return self._postprocess("".join(map(to_unicode, output)))
 
     def stream(self, buffer, namespace={}, encoding="utf-8", **kw):
@@ -47,16 +42,20 @@ class Template(object):
                 buffer.write(postprocess(cache[0]))
                 cache[0] = ""
 
-        namespace = dict(namespace or {}, **dict(kw, **self.builtins))
-        namespace["echo"]  = write_buffer
-        namespace["get"]   = lambda v, default=None: namespace.get(v, default)
-        namespace["isdef"] = lambda v: v in namespace
         postprocess = lambda s: s.encode(encoding)
         if self.options["strip"]:
             postprocess = lambda s: Template.RE_STRIP.sub("", s).encode(encoding)
 
-        eval(self.code, namespace)
+        eval(self.code, self._make_namespace(namespace, write_buffer, **kw))
         write_buffer("", flush=True) # Flush any last cached bytes
+
+    def _make_namespace(self, namespace, echo, **kw):
+        """Return template namespace dictionary, containing given values and template functions."""
+        namespace = dict(namespace or {}, **dict(kw, **self.builtins))
+        namespace["echo"]  = echo
+        namespace["get"]   = lambda v, default=None: namespace.get(v, default)
+        namespace["isdef"] = lambda v: v in namespace
+        return namespace
 
     def _preprocess(self, template):
         """Modify template string before code conversion"""
