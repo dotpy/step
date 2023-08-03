@@ -40,6 +40,11 @@ class TestTemplate(unittest.TestCase):
         output = "I don't like spam"
         self.assertEqual(step.Template(tmpl).expand({}), output)
 
+    def test_get(self):
+        tmpl = r"""{{get("x")}} by {{get("y", 4)}}"""
+        output = "2 by 4"
+        self.assertEqual(step.Template(tmpl).expand({"x": 2}), output)
+
     def test_echo(self):
         tmpl = r"""
                <%if eggs == 1:

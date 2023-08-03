@@ -31,6 +31,7 @@ class Template(object):
         output = []
         namespace = dict(namespace or {}, **dict(kw, **self.builtins))
         namespace["echo"]  = lambda s: output.append(s)
+        namespace["get"]   = lambda v, default=None: namespace.get(v, default)
         namespace["isdef"] = lambda v: v in namespace
 
         eval(self.code, namespace)
@@ -48,6 +49,7 @@ class Template(object):
 
         namespace = dict(namespace or {}, **dict(kw, **self.builtins))
         namespace["echo"]  = write_buffer
+        namespace["get"]   = lambda v, default=None: namespace.get(v, default)
         namespace["isdef"] = lambda v: v in namespace
         postprocess = lambda s: s.encode(encoding)
         if self.options["strip"]:

@@ -61,6 +61,11 @@ name is defined in the template namespace; e.g.:
         my_var is {{my_var}}
     %endif
 
+The `get()` function returns the specified value from template namespace,
+or given fallback if name is undefined, defaulting to `None`; e.g.:
+
+    {{get("x")}} {{get("y", 2)}}
+
 The `setopt()` function allows you to enable options that modify the template
 output; the only supported option is 'strip', which removes leading/trailing
 whitespace, contiguous whitespace and empty lines and defaults to true; e.g.:
