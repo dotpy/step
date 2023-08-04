@@ -40,7 +40,8 @@ class Template(object):
             # Cache output as a single string and write to buffer.
             cache[0] += to_unicode(s)
             if cache[0] and (flush or buffer_size < 1 or len(cache[0]) > buffer_size):
-                buffer.write(self._postprocess(cache[0]).encode(encoding))
+                v = self._postprocess(cache[0])
+                v and buffer.write(v.encode(encoding) if encoding else v)
                 cache[0] = ""
 
         eval(self.code, self._make_namespace(namespace, write_buffer, **kw))

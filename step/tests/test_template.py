@@ -1,6 +1,7 @@
 """Test suite for the step.Template class"""
 
 import base64
+import io
 import unittest
 
 import step
@@ -70,6 +71,16 @@ class TestTemplate(unittest.TestCase):
         output = base64.b64encode(tmpl.encode())
         postprocess = (str.encode, base64.b64encode)
         self.assertEqual(step.Template(tmpl, postprocess=postprocess).expand({}), output)
+
+
+    def test_stream(self):
+        tmpl = "something"
+        bstream = io.BytesIO()
+        step.Template(tmpl).stream(bstream)
+        self.assertEqual(bstream.getvalue(), tmpl.encode())
+        sstream = io.StringIO()
+        step.Template(tmpl).stream(sstream, encoding=None)
+        self.assertEqual(sstream.getvalue(), tmpl)
 
 
     def test_autoescape(self):
