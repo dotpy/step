@@ -22,8 +22,7 @@ class Template(object):
         pp = list([postprocess] if callable(postprocess) else postprocess or [])
         self.template = template
         self.options  = {"strip": strip, "escape": escape, "postprocess": pp}
-        self.builtins = {"escape": escape_html,
-                         "setopt": lambda k, v: self.options.update({k: v}), }
+        self.builtins = {"escape": escape_html, "setopt": self.options.__setitem__}
         key = (template, bool(escape))
         TPLS, CODES = Template.TRANSPILED_TEMPLATES, Template.COMPILED_TEMPLATES
         src = TPLS.setdefault(key, TPLS.get(key) or self._process(self._preprocess(self.template)))
@@ -52,9 +51,7 @@ class Template(object):
     def _make_namespace(self, namespace, echo, **kw):
         """Return template namespace dictionary, containing given values and template functions."""
         namespace = dict(namespace or {}, **dict(kw, **self.builtins))
-        namespace["echo"]  = echo
-        namespace["get"]   = lambda v, default=None: namespace.get(v, default)
-        namespace["isdef"] = lambda v: v in namespace
+        namespace.update(echo=echo, get=namespace.get, isdef=namespace.__contains__)
         return namespace
 
     def _preprocess(self, template):
@@ -65,7 +62,7 @@ class Template(object):
         template = c.sub(r"<%:\g<1>%>", o.sub(r"<%\g<1>%>", template))
 
         # Replace {{!x}} and {{x}} variables with '<%echo(x)%>'.
-        # If auto-escaping is enabled, uses echo(escape(x)) for the second.
+        # If auto-escaping is enabled, use echo(escape(x)) for the second.
         vars = r"\{\{\s*\!(.*?)\}\}", r"\{\{(.*?)\}\}"
         subs = [r"<%echo(\g<1>)%>\n"] * 2
         if self.options["escape"]: subs[1] = r"<%echo(escape(\g<1>))%>\n"
