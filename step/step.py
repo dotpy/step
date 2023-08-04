@@ -11,8 +11,10 @@ class Template(object):
 
     TRANSPILED_TEMPLATES = {} # {(template string, compile options): compilable code string}
     COMPILED_TEMPLATES   = {} # {compilable code string: code object}
-    # Regex for stripping all leading, trailing and interleaving whitespace.
+    # Regexes for stripping all leading and interleaving, and all or rest of trailing whitespace.
     RE_STRIP = re.compile("(^[ \t]+|[ \t]+$|(?<=[ \t])[ \t]+|\\A[\r\n]+|[ \t\r\n]+\\Z)", re.M)
+    RE_STRIP_STREAM = re.compile("(^[ \t]+|[ \t]+$|(?<=[ \t])[ \t]+|\\A[\r\n]+|"
+                                 "((?<=(\r\n))|(?<=[ \t\r\n]))[ \t\r\n]+\\Z)", re.M)
 
     def __init__(self, template, strip=True, escape=False, postprocess=None):
         """Initialize class"""
@@ -40,7 +42,7 @@ class Template(object):
             # Cache output as a single string and write to buffer.
             cache[0] += to_unicode(s)
             if cache[0] and (flush or buffer_size < 1 or len(cache[0]) > buffer_size):
-                v = self._postprocess(cache[0])
+                v = self._postprocess(cache[0], stream=not flush)
                 v and buffer.write(v.encode(encoding) if encoding else v)
                 cache[0] = ""
 
@@ -112,10 +114,10 @@ class Template(object):
 
         return "\n".join(code)
 
-    def _postprocess(self, output):
+    def _postprocess(self, output, stream=False):
         """Modify output string after variables and code evaluation"""
         if self.options["strip"]:
-            output = Template.RE_STRIP.sub("", output)
+            output = (Template.RE_STRIP_STREAM if stream else Template.RE_STRIP).sub("", output)
         for process in self.options["postprocess"]:
             output = process(output)
         return output

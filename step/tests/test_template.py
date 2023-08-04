@@ -83,6 +83,22 @@ class TestTemplate(unittest.TestCase):
         self.assertEqual(sstream.getvalue(), tmpl)
 
 
+    def test_stream_buffer(self):
+        tmpl = r"""
+               %for x in iterable:
+                   {{x}}
+               %endfor
+               """
+        class writer(list): write = list.append
+        vals = [0, 1, 2, 3]
+        stream = writer()
+        step.Template(tmpl).stream(stream, encoding=None, buffer_size=1, iterable=vals)
+        self.assertEqual(stream, ["%s\n" % v for v in vals])
+        stream = writer()
+        step.Template(tmpl).stream(stream, encoding=None, iterable=vals)
+        self.assertEqual(stream, ["\n".join(map(str, vals))])
+
+
     def test_autoescape(self):
         HTML = """<a href=""> &' </a>"""
         ESCAPED = """&lt;a href=&quot;&quot;&gt; &amp;&#39; &lt;/a&gt;"""
