@@ -20,20 +20,20 @@ class Template(object):
         pp = list([postprocess] if callable(postprocess) else postprocess or [])
         self.template = template
         self.options  = {"strip": strip, "escape": escape, "postprocess": pp}
-        self.builtins = {"escape": lambda s: escape_html(s),
+        self.builtins = {"escape": escape_html,
                          "setopt": lambda k, v: self.options.update({k: v}), }
         key = (template, bool(escape))
         TPLS, CODES = Template.TRANSPILED_TEMPLATES, Template.COMPILED_TEMPLATES
         src = TPLS.setdefault(key, TPLS.get(key) or self._process(self._preprocess(self.template)))
         self.code = CODES.setdefault(src, CODES.get(src) or compile(src, "<string>", "exec"))
 
-    def expand(self, namespace={}, **kw):
+    def expand(self, namespace=None, **kw):
         """Return the expanded template string"""
         output = []
         eval(self.code, self._make_namespace(namespace, output.append, **kw))
         return self._postprocess("".join(map(to_unicode, output)))
 
-    def stream(self, buffer, namespace={}, encoding="utf-8", buffer_size=65536, **kw):
+    def stream(self, buffer, namespace=None, encoding="utf-8", buffer_size=65536, **kw):
         """Expand the template and stream it to a file-like buffer."""
 
         def write_buffer(s, flush=False, cache=[""]):
@@ -73,7 +73,7 @@ class Template(object):
     def _process(self, template):
         """Return the code generated from the template string"""
         code_blk = re.compile(r"<%(.*?)%>\n?", re.DOTALL)
-        indent = 0
+        indent, n = 0, 0
         code = []
         for n, blk in enumerate(code_blk.split(template)):
             # Replace '<\%' and '%\>' escapes
