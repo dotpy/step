@@ -1,19 +1,17 @@
 """A light and fast template engine."""
 
 import re
-import sys
 
 
-PY3 = False
-if sys.version_info > (3, 0):
-    PY3 = True
+try: text_type, string_types = unicode, (bytes, unicode)  # Py2
+except Exception: text_type, string_types = str, (str, )  # Py3
 
 
 class Template(object):
 
     COMPILED_TEMPLATES = {} # {template string: code object, }
     # Regex for stripping all leading, trailing and interleaving whitespace.
-    RE_STRIP = re.compile("(^[ \t]+|[ \t]+$|(?<=[ \t])[ \t]+|\A[\r\n]+|[ \t\r\n]+\Z)", re.M)
+    RE_STRIP = re.compile("(^[ \t]+|[ \t]+$|(?<=[ \t])[ \t]+|\\A[\r\n]+|[ \t\r\n]+\\Z)", re.M)
 
     def __init__(self, template, strip=True):
         """Initialize class"""
@@ -31,7 +29,7 @@ class Template(object):
     def expand(self, namespace={}, **kw):
         """Return the expanded template string"""
         output = []
-        namespace.update(kw, **self.builtins)
+        namespace = dict(namespace or {}, **dict(kw, **self.builtins))
         namespace["echo"]  = lambda s: output.append(s)
         namespace["isdef"] = lambda v: v in namespace
 
@@ -48,7 +46,7 @@ class Template(object):
                 buffer.write(postprocess(cache[0]))
                 cache[0] = ""
 
-        namespace.update(kw, **self.builtins)
+        namespace = dict(namespace or {}, **dict(kw, **self.builtins))
         namespace["echo"]  = write_buffer
         namespace["isdef"] = lambda v: v in namespace
         postprocess = lambda s: s.encode(encoding)
@@ -62,11 +60,11 @@ class Template(object):
         """Modify template string before code conversion"""
         # Replace inline ('%') blocks for easier parsing
         o = re.compile("(?m)^[ \t]*%((if|for|while|try).+:)")
-        c = re.compile("(?m)^[ \t]*%(((else|elif|except|finally).*:)|(end\w+))")
+        c = re.compile("(?m)^[ \t]*%(((else|elif|except|finally).*:)|(end\\w+))")
         template = c.sub(r"<%:\g<1>%>", o.sub(r"<%\g<1>%>", template))
 
         # Replace ({{x}}) variables with '<%echo(x)%>'
-        v = re.compile("\{\{(.*?)\}\}")
+        v = re.compile(r"\{\{(.*?)\}\}")
         template = v.sub(r"<%echo(\g<1>)%>\n", template)
 
         return template
@@ -80,7 +78,7 @@ class Template(object):
             # Replace '<\%' and '%\>' escapes
             blk = re.sub(r"<\\%", "<%", re.sub(r"%\\>", "%>", blk))
             # Unescape '%{}' characters
-            blk = re.sub(r"\\(%|{|})", "\g<1>", blk)
+            blk = re.sub(r"\\(%|{|})", r"\g<1>", blk)
 
             if not (n % 2):
                 # Escape backslash characters
@@ -121,15 +119,15 @@ class Template(object):
 def escape_html(x):
     """Escape HTML special characters &<> and quotes "'."""
     CHARS, ENTITIES = "&<>\"'", ["&amp;", "&lt;", "&gt;", "&quot;", "&#39;"]
-    string = x if isinstance(x, basestring) else str(x)
+    string = x if isinstance(x, string_types) else str(x)
     for c, e in zip(CHARS, ENTITIES): string = string.replace(c, e)
     return string
 
 
 def to_unicode(x, encoding="utf-8"):
     """Convert anything to Unicode."""
-    if PY3:
-        return str(x)
-    if not isinstance(x, unicode):
-        x = unicode(str(x), encoding, errors="replace")
+    if isinstance(x, (bytes, bytearray)):
+        x = text_type(x, encoding, errors="replace")
+    elif not isinstance(x, string_types):
+        x = text_type(str(x))
     return x

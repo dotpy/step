@@ -18,8 +18,8 @@ from step.tests import TestCommand
 
 
 __author__ = "Daniele Mazzocchio <danix@kernel-panic.it>"
-__version__ = "0.0.3"
-__date__    = "Jul 25, 2019"
+__version__ = "0.0.4"
+__date__    = "Aug 02, 2023"
 
 
 # Python versions prior 2.2.3 don't support 'classifiers' and 'download_url'
@@ -35,7 +35,7 @@ setup(name             = "step-template",
       packages         = ["step", "step.tests"],
       cmdclass         = {"test": TestCommand},
       description      = "Simple Template Engine for Python",
-      download_url     = "https://github.com/dotpy/step/archive/step-0.0.3.tar.gz",
+      download_url     = "https://github.com/dotpy/step/archive/step-%s.tar.gz" % __version__,
       classifiers      = ["Development Status :: 5 - Production/Stable",
                           "Environment :: Console",
                           "Intended Audience :: Developers",
