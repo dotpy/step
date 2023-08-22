@@ -31,6 +31,10 @@ variables; e.g.:
     This is the third item of my_list: {{my_list[2]}}
     This is not a variable: \{\{x\}\}
 
+If `Template` is created with `escape=True`, all variables are auto-escaped
+for HTML, unless given with a leading exclamation mark; e.g. `raw x: {{!x}}`.
+The escape-function can be changed via `Template().builtins`.
+
 Flow control expressions are written like regular Python control structures,
 preceded by the `%` sign and must be closed by a `%end<statement>` tag; e.g.:
 
@@ -57,6 +61,11 @@ name is defined in the template namespace; e.g.:
         my_var is {{my_var}}
     %endif
 
+The `get()` function returns the specified value from template namespace,
+or given fallback if name is undefined, defaulting to `None`; e.g.:
+
+    {{get("x")}} {{get("y", 2)}}
+
 The `setopt()` function allows you to enable options that modify the template
 output; the only supported option is 'strip', which removes leading/trailing
 whitespace, contiguous whitespace and empty lines and defaults to true; e.g.:
@@ -69,6 +78,11 @@ creation; e.g.:
     tmpl = step.Template(TEMPLATE_STRING, strip=True)
 
 A backslash at the end of a line will suppress the newline character.
+
+Additional postprocessing can be applied on generated content, via
+`Template(.., postprocess=some callable or an iterable of callables)`; e.g.:
+
+    step.Template("\xff", postprocess=str.encode).expand() == b"\xc3\xbf"
 
 
 Documentation
